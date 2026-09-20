@@ -51,9 +51,34 @@ class GeneticAlgorithm:
         #
         # Remember: Selection determines which traits get passed to next generation!
         
-        # Minimal version: just take top 50% of population
-        survival_count = max(1, len(fitness_scores) // 2)  # Top 50%
-        survivors = [gatherer for gatherer, fitness in fitness_scores[:survival_count]]
+        # tournement version
+        #top 5% of elite to make sure we get the best in the end.
+        smallelite =  max(1, int(len(fitness_scores)*SURVIVAL_RATE))
+
+        survivors = [gatherer for gatherer, fitness in fitness_scores[:smallelite]]
+
+        tournament_pool = fitness_scores[smallelite:]
+
+        totalWinners = max(1, len(fitness_scores) // 2)  
+
+        tournamentsize =3
+
+        while (len(survivors) < totalWinners):
+            current_tournament_size = min(tournamentsize, len(tournament_pool))
+
+            if(current_tournament_size<=0):
+                break
+            
+            contestants = random.sample(tournament_pool, tournamentsize)
+            
+            winner_tuple = max(contestants, key=lambda item: item[1])
+            
+            winning_gatherer = winner_tuple[0]
+            
+            survivors.append(winning_gatherer)
+
+            tournament_pool.remove(winner_tuple)
+
         return survivors
     
     def crossover(self, parent1, parent2):
@@ -90,9 +115,21 @@ class GeneticAlgorithm:
         
         for gene_name in gatherer.genes:
             if random.random() < MUTATION_RATE:
-                # Minimal version: just flip a coin and randomize the gene completely
+                current_val = gatherer.genes[gene_name]
                 min_val, max_val = GENE_RANGES[gene_name]
-                gatherer.genes[gene_name] = random.uniform(min_val, max_val)
+
+                #this is 20% of the current value
+                mutatechange=current_val*MUTATION_STRENGTH
+
+                #this is the new value that was the current value that has been altered by at most 20% in either direction
+                new_val = random.gauss(current_val,mutatechange)
+
+                #the max(min) functions as a boundry to prevent the mutation from fluctating too much.
+                gatherer.genes[gene_name] = max(min_val,min(max_val,new_val))
+                
+
+
+                
     
     def create_next_generation(self, population):
         # Evaluate fitness

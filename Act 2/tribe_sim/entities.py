@@ -181,6 +181,7 @@ class Gatherer:
         # - self.alive: whether still alive
         # - self.genes: dict with 'speed', 'caution', 'search_pattern', 'efficiency', 'cooperation'
         #
+        #
         # Strategy hints:
         # 1. Balance survival vs resource gathering (both matter!)
         # 2. Consider rewarding efficient gatherers (more food per time alive)
@@ -189,8 +190,44 @@ class Gatherer:
         # 5. Think about edge cases: dead vs alive, high energy vs low energy
         #
         # Remember: Higher fitness = more likely to reproduce!
+
+        #If they die at 0 then they automatically fail.
+        if(self.age<=0):
+            return 0
+
+        #foodscore weighted same as tribes
+        foodgathered= (self.food_collected/10 )*1
+
+        #surival time calculated just like normal tribes
+        timealive=(self.age/100)*.5
+
+        #measuring how much food gather over person life time highest weight        
+        foodperage=(self.food_collected/self.age)*.15
+
+        fitness_score=foodgathered+timealive+foodperage
+
+        #punish caution if there is less food gathered.
+        if(self.genes.get('caution',0)>80 and self.food_collected <3):
+            fitness_score*=.7
+
+        #punish antisocail 
+        if(self.genes.get('cooperation',0)< .3 and self.food_collected >0):
+            fitness_score*=.7
+
+        #checks if alive, if alive reward, if not alive penalize
+        if(self.alive):
+            fitness_score*=1.1
+        else:
+            fitness_score = fitness_score *.75
+
+        #This baseline_score represents the fitness score of an normal tribe, 
+        baseline_score=(self.age / 100 * 0.5) + (self.food_collected / 10 * 1.0)
+
+        if(fitness_score>(baseline_score*1.2)):
+            fitness_score = baseline_score*1.2 #this will reduce the fitness score so that it wont spiral out of control.
+
+        return max(0,fitness_score)  # edited version 
         
-        return self.age / 100.0  # Minimal version: just survival time
     
     def take_damage(self):
         """Handle death/life loss"""
