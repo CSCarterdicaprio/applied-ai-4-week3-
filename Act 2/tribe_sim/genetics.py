@@ -55,28 +55,32 @@ class GeneticAlgorithm:
         #top 5% of elite to make sure we get the best in the end.
         smallelite =  max(1, int(len(fitness_scores)*SURVIVAL_RATE))
 
+        #this is the start of survivor list, just adds in the elite
         survivors = [gatherer for gatherer, fitness in fitness_scores[:smallelite]]
 
+        #this is the rest of the gathers that will have to compete with each other to get in
         tournament_pool = fitness_scores[smallelite:]
 
+        #this is the total amount of people that we want to use
         totalWinners = max(1, len(fitness_scores) // 2)  
 
+        #small tournament size
         tournamentsize =3
 
         while (len(survivors) < totalWinners):
+            #This shows the current size 
             current_tournament_size = min(tournamentsize, len(tournament_pool))
-
+            #this prevents a tournment from happening if there is no enough people
             if(current_tournament_size<=0):
                 break
-            
+            #grabs random contestants
             contestants = random.sample(tournament_pool, tournamentsize)
-            
+            #finds the winnder by comparing who has best score
             winner_tuple = max(contestants, key=lambda item: item[1])
-            
+            #adds the winner to the list of survivors
             winning_gatherer = winner_tuple[0]
-            
             survivors.append(winning_gatherer)
-
+            #removes them to prevent repeats
             tournament_pool.remove(winner_tuple)
 
         return survivors
@@ -122,9 +126,10 @@ class GeneticAlgorithm:
                 mutatechange=current_val*MUTATION_STRENGTH
 
                 #this is the new value that was the current value that has been altered by at most 20% in either direction
+                #this lets it scale appropately with whatever gene its using.
                 new_val = random.gauss(current_val,mutatechange)
 
-                #the max(min) functions as a boundry to prevent the mutation from fluctating too much.
+                #the max(min) functions as a boundry to prevent the mutation from fluctating out of bounds.
                 gatherer.genes[gene_name] = max(min_val,min(max_val,new_val))
                 
 
