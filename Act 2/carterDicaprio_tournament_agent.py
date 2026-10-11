@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 """
-Tournament Agent: King kong
-Student: Doug Dahl
+Tournament Agent: CartersAgent
+Student: Carter DiCaprio
 Generated: 2026-10-05 17:06:43
 
 Evolution Details:
-- Generations: 100
+- Generations: 250
 - Final Fitness: N/A
 - Trained against: Adaptive, Generous Tit-for-Tat, Always Undercut, Random (0.7), Pavlov...
 
@@ -16,11 +16,11 @@ from agents import Agent, INVEST, UNDERCUT
 import random
 
 
-class DougDahlAgent(Agent):
+class CartersAgent(Agent):
     """
-    King kong
+    CartersAgent
 
-    climb to the top of the empire state building
+    Work till betrayed
 
     Evolved Genes: [1.0, 0.028378916079617202, 0.44814422774842316, 0.9343990997270166, 1.0, 0.6706252246533523]
     """
@@ -30,11 +30,11 @@ class DougDahlAgent(Agent):
         self.genes = [1.0, 0.028378916079617202, 0.44814422774842316, 0.9343990997270166, 1.0, 0.6706252246533523]
 
         # Required for tournament compatibility
-        self.student_name = "Doug Dahl"
+        self.student_name = "Carter DiCaprio"
 
         super().__init__(
-            name="King kong",
-            description="climb to the top of the empire state building"
+            name="CartersAgent",
+            description="Work till betrayed"
         )
 
     def choose_action(self) -> bool:
@@ -43,7 +43,7 @@ class DougDahlAgent(Agent):
         More likely to retaliate, less exploitable
         """
 
-        # First 3 rounds: use initial cooperation gene
+        # First 2 rounds: use initial cooperation gene
         if self.round_num < 2:
             return random.random() < self.genes[0]
 
@@ -103,7 +103,7 @@ class DougDahlAgent(Agent):
 # Convenience function for tournament loading
 def get_agent():
     """Return an instance of this agent for tournament use"""
-    return DougDahlAgent()
+    return CartersAgent()
 
 
 if __name__ == "__main__":
